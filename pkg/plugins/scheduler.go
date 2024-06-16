@@ -107,14 +107,21 @@ func (cs *CustomScheduler) Score(ctx context.Context, state *framework.CycleStat
 	if err != nil {
 		return 0, framework.NewStatus(framework.Error, err.Error())
 	}
-	nodeMemory := nodeInfo.Node().Status.Allocatable.Memory().Value()
+
+	initalAllocatableMemory := nodeInfo.Node().Status.Allocatable.Memory().Value()
+	occuipedMemory := nodeInfo.Requested.Memory
+	remainingMemory := initalAllocatableMemory - occuipedMemory
+
+	var score int64
 	// 2. return the score based on the scheduler mode
 	if cs.scoreMode == leastMode {
-		return -nodeMemory, nil
+		score = -remainingMemory
 	} else if cs.scoreMode == mostMode {
-		return nodeMemory, nil
+		score = remainingMemory
 	}
-	return 0, nil
+
+	log.Printf("Node %s's remaining memory: %dKB, score: %d", nodeName, remainingMemory/1024, score)
+	return score, framework.NewStatus(framework.Success, "")
 }
 
 // ensure the scores are within the valid range
