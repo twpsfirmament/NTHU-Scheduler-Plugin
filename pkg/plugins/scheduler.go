@@ -120,7 +120,7 @@ func (cs *CustomScheduler) Score(ctx context.Context, state *framework.CycleStat
 		score = remainingMemory
 	}
 
-	log.Printf("Node %s's remaining memory: %dKB, score: %d", nodeName, remainingMemory/1024, score)
+	log.Printf("%s remaining memory: %dKB, the score: %d", nodeName, remainingMemory/1024, score)
 	return score, framework.NewStatus(framework.Success, "")
 }
 
